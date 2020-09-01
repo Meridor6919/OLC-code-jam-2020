@@ -1,5 +1,6 @@
 #include <Windows.h>
-#include <thread>
+#include <chrono>
+#include <string>
 
 LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -10,9 +11,9 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 	{
 		return false;
 	}
-	RECT dr;
-	GetWindowRect(GetDesktopWindow(), &dr);
-	HWND hwnd = CreateWindowEx(NULL, L"OLC", L"The great machine", WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, (dr.right - 800) / 2, (dr.bottom - 600) / 2, 800, 600, 0, 0, hinstance, 0);
+	RECT window_rect;
+	GetWindowRect(GetDesktopWindow(), &window_rect);
+	HWND hwnd = CreateWindowEx(NULL, L"OLC", L"The great machine", WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, (window_rect.right - 600) / 2, (window_rect.bottom - 800) / 2, 600, 800, 0, 0, hinstance, 0);
 
 	ShowWindow(hwnd, SW_SHOWDEFAULT);
 	UpdateWindow(hwnd);
@@ -20,8 +21,10 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 	MSG msg = { 0 };
 	HANDLE timer = CreateWaitableTimer(0, true, L"MainLoopTimer");
 	LARGE_INTEGER large_int;
-	large_int.QuadPart = -166666; //60 Hz
-	
+	large_int.QuadPart = -83334; //60 Hz
+
+	std::chrono::time_point<std::chrono::system_clock> last_timestamp = std::chrono::system_clock::now();
+	double delta_time;
 	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -32,6 +35,9 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 		else
 		{
 			SetWaitableTimer(timer, &large_int, 0, 0, 0, 0);
+			delta_time = std::chrono::duration<double>(std::chrono::system_clock::now() - last_timestamp).count();
+			last_timestamp = std::chrono::system_clock::now();
+			SetWindowText(hwnd, (L"The Great machine         " +std::to_wstring(1.0/delta_time) + L" fps").c_str());
 			//Update(delta_time);
 			//Render(delta_time);
 			WaitForSingleObject(timer, INFINITE);
