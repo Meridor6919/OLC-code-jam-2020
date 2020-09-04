@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <chrono>
 #include <string>
+#include "GameClass.h"
 
 LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -11,9 +12,12 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 	{
 		return false;
 	}
-	RECT window_rect;
-	GetWindowRect(GetDesktopWindow(), &window_rect);
-	HWND hwnd = CreateWindowEx(NULL, L"OLC", L"The great machine", WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, (window_rect.right - 600) / 2, (window_rect.bottom - 800) / 2, 600, 800, 0, 0, hinstance, 0);
+	RECT window_rect = { 0,0,600,800 };
+	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
+	RECT screen_rect;
+	GetWindowRect(GetDesktopWindow(), &screen_rect);
+	HWND hwnd = CreateWindowEx(NULL, L"OLC", L"The great machine", WS_OVERLAPPEDWINDOW, (screen_rect.right - window_rect.right + window_rect.left) / 2,
+		(screen_rect.bottom - window_rect.bottom + window_rect.top) / 2, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, 0, 0, hinstance, 0);
 
 	ShowWindow(hwnd, SW_SHOWDEFAULT);
 	UpdateWindow(hwnd);
@@ -25,6 +29,9 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 
 	std::chrono::time_point<std::chrono::system_clock> last_timestamp = std::chrono::system_clock::now();
 	double delta_time;
+
+	GameClass game;
+	game.InitDX(hwnd);
 	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -38,8 +45,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 			delta_time = std::chrono::duration<double>(std::chrono::system_clock::now() - last_timestamp).count();
 			last_timestamp = std::chrono::system_clock::now();
 			SetWindowText(hwnd, (L"The Great machine         " +std::to_wstring(1.0/delta_time) + L" fps").c_str());
-			//Update(delta_time);
-			//Render(delta_time);
+			game.Update(delta_time);
+			game.Render(delta_time);
 			WaitForSingleObject(timer, INFINITE);
 		}
 	}
