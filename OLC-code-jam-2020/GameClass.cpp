@@ -68,12 +68,21 @@ bool GameClass::InitDX(HWND hwnd)
 
 	DirectX::XMMATRIX proj = DirectX::XMMatrixOrthographicOffCenterLH(0.f, float(600), float(800), 0.f, 0.f, 1.f);
 	basic_effect->SetProjection(proj);
+	
+	//Input support
+	mouse = std::make_unique<DirectX::Mouse>();
+	mouse->SetWindow(hwnd);
+	keyboard = std::make_unique<DirectX::Keyboard>();
+	mouse_tracker = std::make_unique<DirectX::Mouse::ButtonStateTracker>();
+	keyboard_tracker = std::make_unique<DirectX::Keyboard::KeyboardStateTracker>();
 
 	return true;
 }
 
 void GameClass::Update(double delta_time)
 {
+	keyboard_tracker->Update(keyboard->GetState());
+	mouse_tracker->Update(mouse->GetState());
 }
 
 void GameClass::Render(double delta_time)

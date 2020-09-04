@@ -75,7 +75,7 @@ LRESULT __stdcall WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_XBUTTONUP:
 	case WM_MOUSEHOVER:
 	{
-		//DirectX::Mouse::ProcessMessage(msg, wparam, lparam);
+		DirectX::Mouse::ProcessMessage(msg, wparam, lparam);
 		break;
 	}
 	case WM_KEYDOWN:
@@ -83,7 +83,7 @@ LRESULT __stdcall WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_KEYUP:
 	case WM_SYSKEYUP:
 	{
-		//DirectX::Keyboard::ProcessMessage(msg, wparam, lparam);
+		DirectX::Keyboard::ProcessMessage(msg, wparam, lparam);
 		break;
 	}
 	default:
