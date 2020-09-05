@@ -26,6 +26,9 @@
     <ClInclude Include="GameClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DrawingClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

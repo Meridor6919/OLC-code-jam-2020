@@ -1,4 +1,5 @@
 #include "GameClass.h"
+#include "DrawingClass.h"
 
 bool GameClass::InitDX(HWND hwnd)
 {
@@ -87,7 +88,7 @@ void GameClass::Update(double delta_time)
 
 void GameClass::Render(double delta_time)
 {
-	device_context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::CornflowerBlue);
+	device_context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::Black);
 	device_context->ClearDepthStencilView(depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	device_context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), depth_stencil_view.Get());
 	device_context->RSSetViewports(1, &viewport);
@@ -99,8 +100,31 @@ void GameClass::Render(double delta_time)
 	device_context->IASetInputLayout(input_layout.Get());
 	primitive_batch->Begin();
 
-
+	//Drawing Circle
+	//DrawFullCircle<50>(primitive_batch.get(), 100, { 100.0f, 100.0f }, main_color, DirectX::Colors::Black);
 	
+	//Drawing platform
+	/*
+	std::array< DirectX::VertexPositionColor, 4> arr{
+	DirectX::VertexPositionColor({ 100, 100, 0 }, main_color),
+	DirectX::VertexPositionColor({ 300, 150, 0 }, main_color),
+	DirectX::VertexPositionColor({ 100, 150, 0 }, main_color),
+	DirectX::VertexPositionColor({ 300, 200, 0 }, main_color) };
+	DrawPlatform<50>(primitive_batch.get(), arr, false);
+	*/
+
+	//Drawing triangle
+	/*
+	std::array< DirectX::VertexPositionColor, 6> arr{
+	DirectX::VertexPositionColor({ 100, 100, 0 }, main_color),
+	DirectX::VertexPositionColor({ 300, 150, 0 }, main_color),
+	DirectX::VertexPositionColor({ 100, 150, 0 }, main_color),
+	DirectX::VertexPositionColor({ 300, 200, 0 }, main_color),
+	DirectX::VertexPositionColor({ 200, 400, 0 }, main_color), 
+	DirectX::VertexPositionColor({ 250, 400, 0 }, main_color) };
+	DrawRoundedTriangle<50>(primitive_batch.get(), arr, true);
+	*/
+
 	primitive_batch->End();
 	swap_chain->Present(0, 0);
 }
