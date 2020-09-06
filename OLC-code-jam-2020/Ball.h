@@ -14,6 +14,7 @@ public:
 	DirectX::XMFLOAT2 position;
 	Paddle* paddle;
 	std::array<Brick*, 80> *bricks;
+	int last_bounce = -1;
 
 	Ball(DirectX::XMFLOAT2 position, Paddle*paddle, std::array<Brick*, 80>* bricks) {
 		this->position = position;
@@ -35,7 +36,6 @@ public:
 		}
 		if (position.x < point2.x && position.x > point1.x && position.y + radius > point1.y && position.y - radius < point1.y)
 		{
-			//set position to avoid clipping
 			if ((up && velocity.y > 0) || (!up && velocity.y < 0))
 			{
 				velocity.y *= -1;
@@ -52,8 +52,6 @@ public:
 			velocity.x *= -1;
 			velocity.y *= -1;
 			return true;
-			//TO DO 
-			//set position to avoid clipping
 		}
 		return false;
 	}
@@ -73,6 +71,7 @@ public:
 		//wall collision
 		if (position.x < radius)
 		{
+			last_bounce = 81;
 			if (velocity.x > 0)
 			{
 				velocity.x *= -1;
@@ -80,6 +79,7 @@ public:
 		}
 		else if (position.x > 600 - radius)
 		{
+			last_bounce = 82;
 			if (velocity.x < 0)
 			{
 				velocity.x *= -1;
@@ -87,6 +87,7 @@ public:
 		}
 		if (position.y < radius)
 		{
+			last_bounce = 83;
 			if (velocity.y > 0)
 			{
 				velocity.y *= -1;
@@ -98,19 +99,29 @@ public:
 		}
 		if (paddle != nullptr)
 		{
-			float circle_radius = (paddle->position[2].position.y - paddle->position[0].position.y) / 2;
-			float circle_center = paddle->position[0].position.y + radius;
-			if (!HorizontalLineCollision(DirectX::XMFLOAT2(paddle->position[0].position.x, paddle->position[0].position.y), DirectX::XMFLOAT2(paddle->position[1].position.x, paddle->position[1].position.y), false))
-				if (!HorizontalLineCollision(DirectX::XMFLOAT2(paddle->position[2].position.x, paddle->position[2].position.y), DirectX::XMFLOAT2(paddle->position[3].position.x, paddle->position[3].position.y), true))
-					if (!CircleCollision(DirectX::XMFLOAT2(paddle->position[0].position.x, circle_center), radius))
-						CircleCollision(DirectX::XMFLOAT2(paddle->position[1].position.x, circle_center), radius);
+			if (last_bounce != 80)
+			{
+				bool hit = false;
+
+				float circle_radius = (paddle->position[2].position.y - paddle->position[0].position.y) / 2;
+				float circle_center = paddle->position[0].position.y + radius;
+				if (!(hit = HorizontalLineCollision(DirectX::XMFLOAT2(paddle->position[0].position.x, paddle->position[0].position.y), DirectX::XMFLOAT2(paddle->position[1].position.x, paddle->position[1].position.y), false)))
+					if (!(hit = HorizontalLineCollision(DirectX::XMFLOAT2(paddle->position[2].position.x, paddle->position[2].position.y), DirectX::XMFLOAT2(paddle->position[3].position.x, paddle->position[3].position.y), true)))
+						if (!( hit = CircleCollision(DirectX::XMFLOAT2(paddle->position[0].position.x, circle_center), radius)))
+							hit = CircleCollision(DirectX::XMFLOAT2(paddle->position[1].position.x, circle_center), radius);
+
+				if (hit)
+				{
+					last_bounce = 80;
+				}
+			}
 		}
 
 
 		//bricks collisions
 		for (int i = 0; i < 80; ++i)
 		{
-			if ((*bricks)[i] != nullptr)
+			if ((*bricks)[i] != nullptr && last_bounce != i)
 			{
 				float circle_radius = ((*bricks)[i]->position[2].position.y - (*bricks)[i]->position[0].position.y) / 2;
 				float circle_center = (*bricks)[i]->position[0].position.y + radius;
@@ -124,6 +135,8 @@ public:
 							hit = CircleCollision(DirectX::XMFLOAT2((*bricks)[i]->position[1].position.x, circle_center), radius);
 				if (hit)
 				{
+					last_bounce = i;
+					break;
 					if (!(*bricks)[i]->OnHit())
 					{
 						delete (*bricks)[i];
