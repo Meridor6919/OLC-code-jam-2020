@@ -24,7 +24,7 @@ public:
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			position[i].position.x += 300.0f * delta_time * (1 - 2 * left);
+			position[i].position.x += 500.0f * delta_time * (1 - 2 * left);
 		}
 		if (position[0].position.x < additional_width)
 		{

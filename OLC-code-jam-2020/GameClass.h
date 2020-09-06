@@ -51,6 +51,8 @@ class GameClass
 	DirectX::XMVECTORF32 main_color = { 0.f, 0.7, 0.f };
 
 public:
+	std::wstring title = L"Not so great machine      ";
+
 	GameClass() {};
 	bool InitDX(HWND hwnd);
 	bool Update(double delta_time);

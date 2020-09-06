@@ -9,6 +9,7 @@ class Ball
 {
 public:
 	const float radius = 15.0f;
+	int score = 80;
 	DirectX::XMVECTORF32 color = DirectX::Colors::White;
 	DirectX::XMFLOAT2 velocity;
 	DirectX::XMFLOAT2 position;
@@ -18,7 +19,7 @@ public:
 
 	Ball(DirectX::XMFLOAT2 position, Paddle*paddle, std::array<Brick*, 80>* bricks) {
 		this->position = position;
-		velocity = { 500.0f, 300.0f };
+		velocity = { -500.0f, 300.0f };
 		this->paddle = paddle;
 		this->bricks = bricks;
 	}
@@ -60,14 +61,6 @@ public:
 	{
 		position.x -= velocity.x * delta_time;
 		position.y -= velocity.y * delta_time;
-		if (velocity.y < 0)
-		{
-			velocity.y -= 10.0f * delta_time;
-		}
-		else
-		{
-			velocity.y += 10.0f * delta_time;
-		}
 
 		//wall collision
 		if (position.x < radius)
@@ -113,6 +106,8 @@ public:
 
 				if (hit)
 				{
+					velocity.x *= 1.01f;
+					velocity.y *= 1.015f;
 					last_bounce = 80;
 				}
 			}
@@ -120,6 +115,7 @@ public:
 
 
 		//bricks collisions
+		
 		for (int i = 0; i < 80; ++i)
 		{
 			if ((*bricks)[i] != nullptr && last_bounce != i)
@@ -137,10 +133,13 @@ public:
 				if (hit)
 				{
 					last_bounce = i;
+					velocity.x *= 1.01f;
+					velocity.y *= 1.015f;
 					if (!(*bricks)[i]->OnHit())
 					{
 						delete (*bricks)[i];
 						(*bricks)[i] = nullptr;
+						score--;
 					}
 					break;
 				}

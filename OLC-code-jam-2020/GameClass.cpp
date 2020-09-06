@@ -11,7 +11,7 @@ bool GameClass::InitDX(HWND hwnd)
 	UINT max_quality_level;
 	dummy_device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, sample_count, &max_quality_level);
 	--max_quality_level; 
-
+	
 	//Creating swap chain and assigning it to device, device context and feature_level
 	DXGI_SWAP_CHAIN_DESC swap_chain_desc = {};
 	swap_chain_desc.BufferCount = 1;
@@ -118,7 +118,14 @@ bool GameClass::Update(double delta_time)
 		paddle->Move(0, delta_time);
 	}
 	if (ball.get() == nullptr)
+	{
 		return false;
+	}
+	if (ball->score <= 0)
+	{
+		title = L"Congratulations you are the winner      ";
+		return false;
+	}
 	return ball->Update(delta_time);
 }
 
@@ -135,7 +142,6 @@ void GameClass::Render(double delta_time)
 	basic_effect->Apply(device_context.Get());
 	device_context->IASetInputLayout(input_layout.Get());
 	primitive_batch->Begin();
-
 	for (int i = 0; i < 80; ++i)
 	{
 		if (bricks[i] != nullptr)
