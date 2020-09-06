@@ -32,6 +32,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 
 	GameClass game;
 	game.InitDX(hwnd);
+	game.LoadGame();
 	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -50,6 +51,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 
 			if (!playing)
 			{
+				game.Cleanup();
 				game.LoadGame();
 			}
 			WaitForSingleObject(timer, INFINITE);

@@ -87,6 +87,12 @@ bool GameClass::Update(double delta_time)
 	static bool left = false;
 	static bool right = false;
 
+	DirectX::XMFLOAT4 f1(0.0f, 0.0f, 0.0f, 100.0f);
+	DirectX::XMVECTOR v1 = DirectX::XMLoadFloat4(&f1);
+	DirectX::XMFLOAT4 f2(-100.0f, 100.0f, 200.0f, 100.0f);
+	DirectX::XMVECTOR v2 = DirectX::XMLoadFloat4(&f2);
+	DirectX::XMVECTOR angle = DirectX::XMVector2AngleBetweenVectors(v1, v2);
+
 	if (keyboard_tracker->IsKeyPressed(DirectX::Keyboard::Left))
 	{
 		left = true;
@@ -113,7 +119,7 @@ bool GameClass::Update(double delta_time)
 	}
 	if (ball.get() == nullptr)
 		return false;
-	//return ball->Update(delta_time);
+	return ball->Update(delta_time);
 }
 
 void GameClass::Render(double delta_time)
@@ -151,7 +157,6 @@ void GameClass::Render(double delta_time)
 
 void GameClass::LoadGame()
 {
-	ball = std::make_unique<Ball>(DirectX::XMFLOAT2(285.0f, 385.0f));
 	std::array<DirectX::VertexPositionColor, 4> paddle_pos = {
 				DirectX::VertexPositionColor({ 250, 750, 0 }, main_color),
 				DirectX::VertexPositionColor({ 350, 750, 0 }, main_color),
@@ -174,6 +179,7 @@ void GameClass::LoadGame()
 			bricks[i * 8 + j] = new Brick(pos);
 		}
 	}
+	ball = std::make_unique<Ball>(DirectX::XMFLOAT2(285.0f, 385.0f), paddle.get(), &bricks);
 }
 
 void GameClass::Cleanup()

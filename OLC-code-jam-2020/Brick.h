@@ -3,7 +3,7 @@
 
 struct Brick {
 
-	int durability = 1;
+	int durability = 2;
 	std::array<DirectX::VertexPositionColor, 4> position;
 
 	Brick(std::array<DirectX::VertexPositionColor, 4> position)
@@ -20,6 +20,7 @@ struct Brick {
 		return durability > 0;
 	}
 
-
+	
+	
 
 };

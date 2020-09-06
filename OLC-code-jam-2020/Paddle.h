@@ -41,8 +41,4 @@ public:
 			position[3].position.x = 600 - additional_width;
 		}
 	}
-
-
-
-
 };

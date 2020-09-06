@@ -21,6 +21,7 @@ using Microsoft::WRL::ComPtr;
 
 class GameClass
 {
+	//DirectX related variables
 	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> device_context;
 	ComPtr<IDXGISwapChain> swap_chain;
@@ -30,7 +31,6 @@ class GameClass
 	ComPtr<ID3D11RenderTargetView> render_target_view;
 	ComPtr<ID3D11InputLayout> input_layout;
 	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
-
 	std::unique_ptr<DirectX::Mouse> mouse;
 	std::unique_ptr<DirectX::Mouse::ButtonStateTracker> mouse_tracker;
 	std::unique_ptr<DirectX::Keyboard> keyboard;
@@ -40,19 +40,16 @@ class GameClass
 	std::unique_ptr<DirectX::CommonStates> common_states;
 	std::unique_ptr<DirectX::BasicEffect> basic_effect;
 	std::unique_ptr<DirectX::SpriteFont> sprite_font;
-	DirectX::XMVECTORF32 main_color = { 0.f, 0.7, 0.f };
-
 	D3D_DRIVER_TYPE driver_type;
 	D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_9_1;
 	D3D11_VIEWPORT viewport;
 	
-
-
+	//Game variables
 	std::unique_ptr<Ball> ball;
 	std::unique_ptr<Paddle> paddle;
 	std::array<Brick*, 80> bricks;
-	std::vector<std::pair<DirectX::XMFLOAT4, float>> lines_to_collide_with = {};
-	std::vector<std::pair<DirectX::XMFLOAT3, float>> circles_to_collide_with = {};
+	DirectX::XMVECTORF32 main_color = { 0.f, 0.7, 0.f };
+
 public:
 	GameClass() {};
 	bool InitDX(HWND hwnd);
