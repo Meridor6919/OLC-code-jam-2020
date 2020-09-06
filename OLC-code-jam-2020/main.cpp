@@ -16,7 +16,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
 	RECT screen_rect;
 	GetWindowRect(GetDesktopWindow(), &screen_rect);
-	HWND hwnd = CreateWindowEx(NULL, L"OLC", L"The great machine", WS_OVERLAPPEDWINDOW, (screen_rect.right - window_rect.right + window_rect.left) / 2,
+	HWND hwnd = CreateWindowEx(NULL, L"OLC", L"Not so great machine", WS_OVERLAPPEDWINDOW, (screen_rect.right - window_rect.right + window_rect.left) / 2,
 		(screen_rect.bottom - window_rect.bottom + window_rect.top) / 2, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, 0, 0, hinstance, 0);
 
 	ShowWindow(hwnd, SW_SHOWDEFAULT);
@@ -44,9 +44,14 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd_line
 			SetWaitableTimer(timer, &large_int, 0, 0, 0, 0);
 			delta_time = std::chrono::duration<double>(std::chrono::system_clock::now() - last_timestamp).count();
 			last_timestamp = std::chrono::system_clock::now();
-			SetWindowText(hwnd, (L"The Great machine         " +std::to_wstring(1.0/delta_time) + L" fps").c_str());
-			game.Update(delta_time);
+			SetWindowText(hwnd, (L"Not so great machine         " +std::to_wstring(1.0/delta_time) + L" fps").c_str());
+			bool playing = game.Update(delta_time);
 			game.Render(delta_time);
+
+			if (!playing)
+			{
+				game.LoadGame();
+			}
 			WaitForSingleObject(timer, INFINITE);
 		}
 	}

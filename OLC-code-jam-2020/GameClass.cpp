@@ -76,14 +76,44 @@ bool GameClass::InitDX(HWND hwnd)
 	keyboard = std::make_unique<DirectX::Keyboard>();
 	mouse_tracker = std::make_unique<DirectX::Mouse::ButtonStateTracker>();
 	keyboard_tracker = std::make_unique<DirectX::Keyboard::KeyboardStateTracker>();
-
 	return true;
 }
 
-void GameClass::Update(double delta_time)
+bool GameClass::Update(double delta_time)
 {
 	keyboard_tracker->Update(keyboard->GetState());
 	mouse_tracker->Update(mouse->GetState());
+
+	static bool left = false;
+	static bool right = false;
+
+	if (keyboard_tracker->IsKeyPressed(DirectX::Keyboard::Left))
+	{
+		left = true;
+	}
+	else if(keyboard_tracker->IsKeyReleased(DirectX::Keyboard::Left))
+	{
+		left = false;
+	}
+	if (keyboard_tracker->IsKeyPressed(DirectX::Keyboard::Right))
+	{
+		right = true;
+	}
+	else if (keyboard_tracker->IsKeyReleased(DirectX::Keyboard::Right))
+	{
+		right = false;
+	}
+	if (left && paddle.get() != nullptr)
+	{
+		paddle->Move(1, delta_time);
+	}
+	if (right && paddle.get() != nullptr)
+	{
+		paddle->Move(0, delta_time);
+	}
+	if (ball.get() == nullptr)
+		return false;
+	//return ball->Update(delta_time);
 }
 
 void GameClass::Render(double delta_time)
@@ -100,31 +130,59 @@ void GameClass::Render(double delta_time)
 	device_context->IASetInputLayout(input_layout.Get());
 	primitive_batch->Begin();
 
-	//Drawing Circle
-	//DrawFullCircle<50>(primitive_batch.get(), 100, { 100.0f, 100.0f }, main_color, DirectX::Colors::Black);
-	
-	//Drawing platform
-	/*
-	std::array< DirectX::VertexPositionColor, 4> arr{
-	DirectX::VertexPositionColor({ 100, 100, 0 }, main_color),
-	DirectX::VertexPositionColor({ 300, 150, 0 }, main_color),
-	DirectX::VertexPositionColor({ 100, 150, 0 }, main_color),
-	DirectX::VertexPositionColor({ 300, 200, 0 }, main_color) };
-	DrawPlatform<50>(primitive_batch.get(), arr, false);
-	*/
-
-	//Drawing triangle
-	/*
-	std::array< DirectX::VertexPositionColor, 6> arr{
-	DirectX::VertexPositionColor({ 100, 100, 0 }, main_color),
-	DirectX::VertexPositionColor({ 300, 150, 0 }, main_color),
-	DirectX::VertexPositionColor({ 100, 150, 0 }, main_color),
-	DirectX::VertexPositionColor({ 300, 200, 0 }, main_color),
-	DirectX::VertexPositionColor({ 200, 400, 0 }, main_color), 
-	DirectX::VertexPositionColor({ 250, 400, 0 }, main_color) };
-	DrawRoundedTriangle<50>(primitive_batch.get(), arr, true);
-	*/
-
+	for (int i = 0; i < 80; ++i)
+	{
+		if (bricks[i] != nullptr)
+		{
+			bricks[i]->Render(primitive_batch.get());
+		}
+	}
+	if (ball.get() != nullptr)
+	{
+		ball->Render(primitive_batch.get());
+	}
+	if (paddle.get() != nullptr)
+	{
+		paddle->Render(primitive_batch.get());
+	}
 	primitive_batch->End();
 	swap_chain->Present(0, 0);
+}
+
+void GameClass::LoadGame()
+{
+	ball = std::make_unique<Ball>(DirectX::XMFLOAT2(285.0f, 385.0f));
+	std::array<DirectX::VertexPositionColor, 4> paddle_pos = {
+				DirectX::VertexPositionColor({ 250, 750, 0 }, main_color),
+				DirectX::VertexPositionColor({ 350, 750, 0 }, main_color),
+				DirectX::VertexPositionColor({ 250, 780, 0 }, DirectX::Colors::Black),
+				DirectX::VertexPositionColor({ 350, 780, 0 }, DirectX::Colors::Black)
+	};
+
+
+	paddle = std::make_unique<Paddle>(paddle_pos);
+	for (int i = 0; i < 10; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
+			std::array<DirectX::VertexPositionColor, 4> pos = {
+				DirectX::VertexPositionColor({ 20 + 75 * static_cast<float>(j), 20 + 25 * static_cast<float>(i), 0 }, main_color),
+				DirectX::VertexPositionColor({ 60 + 75 * static_cast<float>(j), 20 + 25 * static_cast<float>(i), 0 }, main_color),
+				DirectX::VertexPositionColor({ 20 + 75 * static_cast<float>(j), 35 + 25 * static_cast<float>(i), 0 }, DirectX::Colors::DarkOliveGreen),
+				DirectX::VertexPositionColor({ 60 + 75 * static_cast<float>(j), 35 + 25 * static_cast<float>(i), 0 }, DirectX::Colors::DarkOliveGreen)
+			};
+			bricks[i * 8 + j] = new Brick(pos);
+		}
+	}
+}
+
+void GameClass::Cleanup()
+{
+	for (int i = 0; i < 80; ++i)
+	{
+		if (bricks[i] != nullptr)
+		{
+			delete bricks[i];
+		}
+	}
 }

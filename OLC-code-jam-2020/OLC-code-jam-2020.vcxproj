@@ -144,8 +144,11 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ball.h" />
+    <ClInclude Include="Brick.h" />
     <ClInclude Include="DrawingClass.h" />
     <ClInclude Include="GameClass.h" />
+    <ClInclude Include="Paddle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

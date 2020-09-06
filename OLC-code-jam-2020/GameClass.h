@@ -13,6 +13,9 @@
 #include <VertexTypes.h>
 #include <SpriteFont.h>
 #include <SimpleMath.h>
+#include "Ball.h"
+#include "Brick.h"
+#include "Paddle.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -43,10 +46,19 @@ class GameClass
 	D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_9_1;
 	D3D11_VIEWPORT viewport;
 	
+
+
+	std::unique_ptr<Ball> ball;
+	std::unique_ptr<Paddle> paddle;
+	std::array<Brick*, 80> bricks;
+	std::vector<std::pair<DirectX::XMFLOAT4, float>> lines_to_collide_with = {};
+	std::vector<std::pair<DirectX::XMFLOAT3, float>> circles_to_collide_with = {};
 public:
 	GameClass() {};
 	bool InitDX(HWND hwnd);
-	void Update(double delta_time);
+	bool Update(double delta_time);
 	void Render(double delta_time);
+	void LoadGame();
+	void Cleanup();
 };
 

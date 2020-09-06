@@ -41,18 +41,20 @@ void DrawPlatform(DirectX::PrimitiveBatch<DirectX::VertexPositionColor>* primiti
 	const float radius1 = sqrtf((v[0].position.x - v[2].position.x) * (v[0].position.x - v[2].position.x) + (v[0].position.y - v[2].position.y) * (v[0].position.y - v[2].position.y))/2;
 	const float radius2 = sqrtf((v[1].position.x - v[3].position.x) * (v[1].position.x - v[3].position.x) + (v[1].position.y - v[3].position.y) * (v[1].position.y - v[3].position.y))/2;
 
-	DirectX::XMVECTORF32 color;
-	color.v = DirectX::XMLoadFloat4(&v[0].color);
+	DirectX::XMVECTORF32 color1;
+	color1.v = DirectX::XMLoadFloat4(&v[0].color);
+	DirectX::XMVECTORF32 color2;
+	color2.v = DirectX::XMLoadFloat4(&v[3].color);
 	if (hallow)
 	{
-		DrawHallowCircle<T>(primitive_batch, radius1, orgin1, color);
-		DrawHallowCircle<T>(primitive_batch, radius2, orgin2, color);
+		DrawHallowCircle<T>(primitive_batch, radius1, orgin1, color1);
+		DrawHallowCircle<T>(primitive_batch, radius2, orgin2, color1);
 	}
 	else
 	{
 		primitive_batch->DrawQuad(v[0], v[1], v[3], v[2]);
-		DrawFullCircle<T>(primitive_batch, radius1, orgin1, color, color);
-		DrawFullCircle<T>(primitive_batch, radius2, orgin2, color, color);
+		DrawFullCircle<T>(primitive_batch, radius1, orgin1, color1, color2);
+		DrawFullCircle<T>(primitive_batch, radius2, orgin2, color1, color2);
 	}
 }
 
